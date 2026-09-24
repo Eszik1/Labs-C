@@ -197,4 +197,48 @@ internal class Program
 
         return $"amino-acid occurs:\n{bestChar}\n{maxCount}";
     }
+    static void ProcessCommandsAndWriteReport(List<GeneticData> database, string commandsFilePath, string outputFilePath)
+    {
+        if (!File.Exists(commandsFilePath))
+            return;
+
+        StringBuilder output = new StringBuilder();
+
+        string[] commandLines = File.ReadAllLines(commandsFilePath);
+        int commandIndex = 1;
+
+        foreach (string line in commandLines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
+
+            string[] parts = line.Split('\t');
+            string command = parts[0].Trim();
+            string formattedIndex = commandIndex.ToString("D3");
+
+            if (command == "search" && parts.Length >= 2)
+            {
+                string query = parts[1].Trim();
+                output.AppendLine($"{formattedIndex} search\t{query}");
+                output.AppendLine(ProcessSearch(database, query));
+            }
+            else if (command == "diff" && parts.Length >= 3)
+            {
+                string protein1 = parts[1].Trim();
+                string protein2 = parts[2].Trim();
+                output.AppendLine($"{formattedIndex} diff\t{protein1}\t{protein2}");
+                output.AppendLine(ProcessDiff(database, protein1, protein2));
+            }
+            else if (command == "mode" && parts.Length >= 2)
+            {
+                string protein = parts[1].Trim();
+                output.AppendLine($"{formattedIndex} mode\t{protein}");
+                output.AppendLine(ProcessMode(database, protein));
+            }
+
+            commandIndex++;
+        }
+
+        File.WriteAllText(outputFilePath, output.ToString());
+    }
 }
