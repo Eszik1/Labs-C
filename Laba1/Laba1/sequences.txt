@@ -1,0 +1,3 @@
+AlphaProtein	Human	3A4C
+BetaProtein	Mouse	2G5T
+GammaProtein	Rat	ACGT

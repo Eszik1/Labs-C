@@ -1,0 +1,3 @@
+mode	AlphaProtein
+search	AAA
+diff	AlphaProtein	BetaProtein
