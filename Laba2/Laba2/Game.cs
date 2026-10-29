@@ -10,7 +10,7 @@ namespace Laba2
         public int size;
         public Player cat;
         public Player mouse;
-
+        private bool mouseCaught = false;
         private readonly string inputFile;
         private readonly string outputFile;
         private readonly List<string> printRows = new List<string>();
@@ -54,8 +54,10 @@ namespace Laba2
                     else if (command == 'M' || command == 'C')
                     {
                         int steps = int.Parse(parts[1]);
-                        DoMoveCommand(command, steps);
+                        DoMoveCommand(command, steps);                       
                     }
+                    if (mouseCaught)
+                        break;
                 }
             }
 
@@ -75,6 +77,14 @@ namespace Laba2
                     cat.Move(steps, size);
                     break;
             }
+            if (cat.state != Player.State.NotInGame &&
+                   mouse.state != Player.State.NotInGame &&
+                    cat.location == mouse.location)
+            {
+                mouseCaught = true;
+                cat.state = Player.State.Winner;
+                mouse.state = Player.State.Loser;
+            }
         }
 
         private int GetDistance()
@@ -84,8 +94,9 @@ namespace Laba2
             {
                 return -1;
             }
+            int directDistance = Math.Abs(cat.location - mouse.location);
 
-            return Math.Abs(cat.location - mouse.location);
+            return Math.Min(directDistance, size - directDistance);
         }
 
         private void DoPrintCommand()
