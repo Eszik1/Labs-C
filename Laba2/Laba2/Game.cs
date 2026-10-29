@@ -10,7 +10,9 @@ namespace Laba2
         public int size;
         public Player cat;
         public Player mouse;
+
         private bool mouseCaught = false;
+
         private readonly string inputFile;
         private readonly string outputFile;
         private readonly List<string> printRows = new List<string>();
@@ -30,7 +32,7 @@ namespace Laba2
         {
             using (StreamReader reader = new StreamReader(inputFile))
             {
-                
+
                 reader.ReadLine();
 
                 string? line;
@@ -43,7 +45,8 @@ namespace Laba2
                         continue;
 
                     string[] parts = line.Split(
-                        ' ', StringSplitOptions.RemoveEmptyEntries);
+                        ' ',
+                        StringSplitOptions.RemoveEmptyEntries);
 
                     char command = char.ToUpperInvariant(parts[0][0]);
 
@@ -54,19 +57,31 @@ namespace Laba2
                     else if (command == 'M' || command == 'C')
                     {
                         int steps = int.Parse(parts[1]);
-                        DoMoveCommand(command, steps);                       
+                        DoMoveCommand(command, steps);
                     }
+
+
                     if (mouseCaught)
                         break;
                 }
             }
 
-           
-            File.WriteAllLines(outputFile, printRows);
+
+            if (!mouseCaught)
+            {
+                cat.state = Player.State.Loser;
+                mouse.state = Player.State.Winner;
+            }
+
+            WriteReport();
         }
+
 
         private void DoMoveCommand(char command, int steps)
         {
+            if (mouseCaught)
+                return;
+
             switch (command)
             {
                 case 'M':
@@ -77,9 +92,10 @@ namespace Laba2
                     cat.Move(steps, size);
                     break;
             }
+
             if (cat.state != Player.State.NotInGame &&
-                   mouse.state != Player.State.NotInGame &&
-                    cat.location == mouse.location)
+                mouse.state != Player.State.NotInGame &&
+                cat.location == mouse.location)
             {
                 mouseCaught = true;
                 cat.state = Player.State.Winner;
@@ -101,22 +117,55 @@ namespace Laba2
 
         private void DoPrintCommand()
         {
-            int distance = GetDistance();
-
             string catPosition =
-                cat.state == Player.State.NotInGame
-                    ? "??" : cat.location.ToString();
+            cat.state == Player.State.NotInGame ? "??" : cat.location.ToString();
 
             string mousePosition =
-                mouse.state == Player.State.NotInGame
-                    ? "??" : mouse.location.ToString();
+                mouse.state == Player.State.NotInGame ? "??" : mouse.location.ToString();
+
+            int distance = GetDistance();
 
             string distanceText =
                 distance < 0 ? "??" : distance.ToString();
 
             printRows.Add(
-                $"{catPosition,-10}{mousePosition,-10}{distanceText}");
+                $" {catPosition,3}  {mousePosition,5}  {distanceText,8}");
+        }
+        private void WriteReport()
+        {
+            using (StreamWriter writer = new StreamWriter(outputFile))
+            {
+                writer.WriteLine("Cat and Mouse");
+                writer.WriteLine();
+
+                writer.WriteLine("Cat  Mouse  Distance");
+                writer.WriteLine("--------------------");
+
+                foreach (string row in printRows)
+                {
+                    writer.WriteLine(row);
+                }
+
+                writer.WriteLine("--------------------");
+                writer.WriteLine();
+                writer.WriteLine();
+
+                writer.WriteLine(
+                    $"Distance traveled:   Mouse    Cat");
+
+                writer.WriteLine( $" {mouse.distanceTraveled,5}    {cat.distanceTraveled,5}");
+
+                writer.WriteLine();
+
+                if (mouseCaught)
+                {
+                    writer.WriteLine($"Mouse caught at: {mouse.location}");
+                }
+                else
+                {
+                    writer.WriteLine("Mouse evaded Cat");
+                }
+            }
         }
     }
-
 }

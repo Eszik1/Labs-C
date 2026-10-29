@@ -1,4 +1,4 @@
-﻿
+﻿using System.Linq;
 using Laba2;
 
 class Program
