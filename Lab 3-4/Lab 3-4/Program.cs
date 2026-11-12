@@ -12,6 +12,7 @@ internal class Program
         string sampleText =
             "Peter Piper picked a peck of pickled peppers.\n" +
             "A peck of pickled peppers Peter Piper picked.\n" +
+            "Cat dog bat run. Peter Piper picked a peck of pickled peppers."+
             "If Peter Piper picked a peck of pickled peppers, where is the peck that Peter Piper picked?";
 
         Text myText = Text.Parse(sampleText);
@@ -23,7 +24,10 @@ internal class Program
 
         myText.FindWordsInInterrogative(4);
 
-        myText.RemoveWordsStartingWithConsonant(3); 
+        myText.RemoveWordsStartingWithConsonant(3);
+      
+        foreach (var s in myText.Sentences)
+            Console.WriteLine($"  {s}");
 
         Console.WriteLine("\n5. Замена слов длины 5 в первом предложении на 'TEST'");
         Console.WriteLine($"До замены:    {myText.Sentences[0]}");
