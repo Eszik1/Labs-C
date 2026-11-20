@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lab5
+namespace lab5
 {
     public class OtherIngredient : Ingredient
     {
